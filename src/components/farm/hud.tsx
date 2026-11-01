@@ -26,6 +26,7 @@ export function Hud() {
   const droneChance = useGame((s) => s.droneChance);
   const bacon = useGame((s) => s.levels.bacon);
   const hay = useGame((s) => s.hay);
+  const rageLeft = useGame((s) => s.rageLeft);
 
   return (
     <div className="hud" aria-label="Статистика фермы">
@@ -33,6 +34,7 @@ export function Hud() {
       <Chip label="Клик" value={formatMilk(clickPower)} />
       <Chip label="В секунду" value={formatMilk(mps)} />
       {combo > 1 ? <Chip label="Комбо" value={`x${combo}`} hot /> : null}
+      {rageLeft > 0 ? <Chip label="Ярость" value={secs(rageLeft)} hot /> : null}
       {kefirLeft > 0 ? <Chip label="Кефир" value={secs(kefirLeft)} hot /> : null}
       {droneLeft > 0 ? <Chip label="Дроны" value={secs(droneLeft)} hot /> : null}
       <Chip label="Шанс кефира" value={formatChance(kefirChance)} />

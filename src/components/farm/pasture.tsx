@@ -18,6 +18,10 @@ export function Pasture() {
   const shakeToken = useGame((s) => s.shakeToken);
   const hitToken = useGame((s) => s.hitToken);
   const juice = useGame((s) => s.juice);
+  const cowLine = useGame((s) => s.cowLine);
+  const shout = useGame((s) => s.shout);
+  const rageLeft = useGame((s) => s.rageLeft);
+  const combo = useGame((s) => s.combo);
   const cowRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -36,7 +40,23 @@ export function Pasture() {
     el.classList.add("is-hit");
   }, [hitToken]);
 
-  const mood = droneLeft > 0 ? "pasture pasture-drone" : kefirLeft > 0 ? "pasture pasture-kefir" : "pasture";
+  const mood = [
+    "pasture",
+    droneLeft > 0 ? "pasture-drone" : "",
+    kefirLeft > 0 ? "pasture-kefir" : "",
+    rageLeft > 0 ? "pasture-rage" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const cowClass = [
+    "mascot mascot-cow",
+    kefirLeft > 0 ? "cow-rainbow" : "",
+    rageLeft > 0 ? "cow-rage" : "",
+    combo >= 12 ? "cow-hype" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div className={mood} ref={ref}>
@@ -49,7 +69,16 @@ export function Pasture() {
           </span>
         </button>
       ) : null}
+      {shout ? <p className="shout">{shout}</p> : null}
       <div className="stage">
+        {hitToken > 0 ? (
+          <span key={hitToken} className="splats" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+            <i />
+          </span>
+        ) : null}
         {droneLeft > 0 ? (
           <button type="button" className="slot drone-slot" onClick={() => pokeDrone()}>
             <DroneSvg className="mascot mascot-drone" />
@@ -74,8 +103,9 @@ export function Pasture() {
           }}
         >
           <span className="name-tag">Саня</span>
-          <CowSvg className={kefirLeft > 0 ? "mascot mascot-cow cow-rainbow" : "mascot mascot-cow"} />
-          <span className="cow-hint">жми, или пробел</span>
+          <CowSvg className={cowClass} />
+          {cowLine ? <span className="bubble bubble-cow">{cowLine}</span> : null}
+          <span className="cow-hint">{rageLeft > 0 ? "она в ярости, жми" : "жми, или пробел"}</span>
         </button>
         <button type="button" className={ilyusha > 0 ? "slot pig-slot" : "slot pig-slot pig-locked"} onClick={() => pokePig()}>
           <PigSvg className="mascot mascot-pig" />

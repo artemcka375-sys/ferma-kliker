@@ -18,10 +18,12 @@ import {
 import {
   ACHIEVEMENTS,
   BACON_LINES,
+  COMBO_SHOUTS,
   DRONE_LINES,
   EVENT_COPY,
   ILYUSHA_LINES,
   NEWS,
+  SANYA_LINES,
   type EventKind,
 } from "@/game/content";
 import { playBuy, playCrit, playDrone, playKefir, playMilk, playUi, setMuted, unlockAudio } from "@/game/audio";
@@ -78,6 +80,11 @@ type Live = {
   hitToken: number;
   dronePoke: number;
   uiAcc: number;
+  cowLine: string | null;
+  cowLineLeft: number;
+  shout: string | null;
+  shoutLeft: number;
+  rageLeft: number;
 };
 
 export type ViewState = {
@@ -109,6 +116,9 @@ export type ViewState = {
   shakeToken: number;
   hitToken: number;
   panel: PanelId;
+  cowLine: string | null;
+  shout: string | null;
+  rageLeft: number;
   clickPower: number;
   mps: number;
   kefirChance: number;
@@ -141,6 +151,11 @@ function freshLive(): Live {
     hitToken: 0,
     dronePoke: 0,
     uiAcc: 0,
+    cowLine: null,
+    cowLineLeft: 0,
+    shout: null,
+    shoutLeft: 0,
+    rageLeft: 0,
   };
 }
 
@@ -185,6 +200,9 @@ function snapshot(): ViewState {
     droneLine: live.droneLine,
     shakeToken: live.shakeToken,
     hitToken: live.hitToken,
+    cowLine: live.cowLine,
+    shout: live.shout,
+    rageLeft: live.rageLeft,
     panel,
     clickPower:
       prod.clickPower *
@@ -376,6 +394,15 @@ export function toggleJuice() {
   flushSave();
 }
 
+function maybeShout() {
+  const hit = COMBO_SHOUTS.find((item) => item.at === live.combo);
+  if (!hit) return;
+  live.shout = hit.text;
+  live.shoutLeft = 1.7;
+  if (live.combo >= 50) live.rageLeft = Math.max(live.rageLeft, 8);
+  addLog(hit.text + ". Саня это слышала и не против.");
+}
+
 export function clickCow(x = -1, y = -1) {
   if (!live.started) return;
   live.clicks += 1;
@@ -383,6 +410,7 @@ export function clickCow(x = -1, y = -1) {
   else live.combo = 1;
   live.idle = 0;
   if (live.combo > live.bestCombo) live.bestCombo = live.combo;
+  maybeShout();
 
   const prod = production(live);
   let amount =
@@ -391,12 +419,19 @@ export function clickCow(x = -1, y = -1) {
     (live.levels.golden > 0 ? 2 : 1) *
     prod.hayMult *
     comboMultiplier(live.combo, live.levels.chicken);
+  if (live.rageLeft > 0) amount *= 2;
   const crit = Math.random() < critChance(live.levels);
   if (crit) {
     amount *= 4;
     live.crits += 1;
+    live.cowLine = "Зина жарит крит прямо на мне!";
+    live.cowLineLeft = 1.8;
     playCrit();
   } else {
+    if (live.clicks % 8 === 0) {
+      live.cowLine = pick(SANYA_LINES);
+      live.cowLineLeft = 1.8;
+    }
     playMilk();
   }
   addMilk(amount);
@@ -450,6 +485,8 @@ export function buy(id: UpgradeId) {
     notify("Бекон на ферме. Дроны уже нюхают воздух.");
   }
   if (id === "golden") notify("Вымя стало золотым. Смотреть можно, доить осторожно.");
+  if (id === "goat") notify("Галя в штате. Первый иск — на туман, второй — на тебя, если мало жмёшь.");
+  if (id === "samovar") notify("Самовар Коли закипел. Чай отказался быть чаем.");
   checkAchievements();
   push();
   flushSave();
@@ -472,6 +509,8 @@ function label(id: UpgradeId): string {
     altar: "алтарь ряженки",
     chicken: "Клава",
     bacon: "бекон",
+    goat: "Галя",
+    samovar: "самовар Коли",
   };
   return names[id];
 }
@@ -521,6 +560,18 @@ export function clickEvent() {
     addMilk(prod.clickPower * 35 + 120);
     live.combo += 5;
     if (live.combo > live.bestCombo) live.bestCombo = live.combo;
+    maybeShout();
+  }
+  if (kind === "goat") addMilk(prod.clickPower * 60 + prod.total * 12);
+  if (kind === "samovar") {
+    addMilk(prod.clickPower * 45 + 400);
+    live.kefirLeft = Math.max(live.kefirLeft, 12);
+  }
+  if (kind === "fridge") {
+    addMilk(prod.total * 15 + 800);
+    live.combo += 3;
+    if (live.combo > live.bestCombo) live.bestCombo = live.combo;
+    maybeShout();
   }
   notify(EVENT_COPY[kind].hit, 2.8);
   addLog(EVENT_COPY[kind].hit);
@@ -533,7 +584,7 @@ export function clickEvent() {
 }
 
 function spawnEvent() {
-  const kinds: EventKind[] = ["ufo", "tractor", "bottle", "chicken"];
+  const kinds: EventKind[] = ["ufo", "tractor", "bottle", "chicken", "goat", "samovar", "fridge"];
   const kind = pick(kinds);
   live.event = { kind, left: 7 };
   live.eventCooldown = 24;
@@ -570,6 +621,19 @@ export function frame() {
     }
   }
   if (live.dronePoke > 0) live.dronePoke = Math.max(0, live.dronePoke - simDt);
+
+  if (live.rageLeft > 0) {
+    live.rageLeft = Math.max(0, live.rageLeft - simDt);
+    if (live.rageLeft === 0) addLog("Саня выдохнула. Ярость ушла в бидон.");
+  }
+  if (live.cowLineLeft > 0) {
+    live.cowLineLeft -= simDt;
+    if (live.cowLineLeft <= 0) live.cowLine = null;
+  }
+  if (live.shoutLeft > 0) {
+    live.shoutLeft -= simDt;
+    if (live.shoutLeft <= 0) live.shout = null;
+  }
 
   live.idle += simDt;
   if (live.idle >= 0.9 && live.combo !== 0) live.combo = 0;
@@ -627,6 +691,9 @@ export function prestige() {
   live.kefirLeft = 0;
   live.droneLeft = 0;
   live.combo = 0;
+  live.rageLeft = 0;
+  live.shout = null;
+  live.cowLine = null;
   live.event = null;
   live.eventCooldown = 18;
   addLog(`Отпуск №${live.prestiges}. Сена привезли: +${gain}.`);

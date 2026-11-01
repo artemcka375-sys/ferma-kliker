@@ -67,6 +67,29 @@ function useHotkeys() {
   }, []);
 }
 
+function DeskIcons() {
+  return (
+    <nav className="desk-icons" aria-label="Рабочий стол">
+      <button type="button" onClick={() => joke("Мой бидон. Свободно: ноль. Занято: молоко и совесть Клавы.")}>
+        <span className="desk-glyph">Б</span>
+        Мой бидон
+      </button>
+      <button type="button" onClick={() => joke("Корзина Клавы. Туда падают отчёты, которые не сошлись. То есть все.")}>
+        <span className="desk-glyph">К</span>
+        Корзина
+      </button>
+      <button type="button" onClick={() => setPanel("about")}>
+        <span className="desk-glyph">С</span>
+        save.json
+      </button>
+      <button type="button" onClick={() => joke("Бекон.zip. Распаковывать только при дронах. Илюша против, бекон за.")}>
+        <span className="desk-glyph">З</span>
+        Бекон.zip
+      </button>
+    </nav>
+  );
+}
+
 function TitleBar() {
   const muted = useGame((s) => s.muted);
   const started = useGame((s) => s.started);
@@ -123,6 +146,7 @@ function BootScreen() {
         <li>Илюша на связи, уже торгуется</li>
         <li>Дроны в ангаре, ждут бекон</li>
         <li>Клава свела вчерашний кефир в минус</li>
+        <li>Галя уже судится с туманом</li>
       </ul>
       <p className="boot-lead">
         {returning
@@ -132,7 +156,7 @@ function BootScreen() {
       <button type="button" className="go" onClick={() => start()}>
         {returning ? "Продолжить дойку" : "Надеть перчатки"}
       </button>
-      <p className="boot-note">Пробел тоже запускает. Это программа: окно, пуск, сохранения на диск.</p>
+      <p className="boot-note">Пробел запускает. Это программа: рабочий стол, окно sanya.exe и сохранение.</p>
     </div>
   );
 }
@@ -214,7 +238,8 @@ function Panels() {
               <li>Жми Саню или пробел. Быстрые клики копят комбо.</li>
               <li>Кефир — редкий, +50% на полминуты. Илюша поднимает шанс.</li>
               <li>Бекон манит дронов. Они льют +5 000 молока в секунду.</li>
-              <li>С неба падают НЛО, трактор, бутыль и Клава. Успей тыкнуть.</li>
+              <li>С неба падают НЛО, трактор, бутыль, Клава, Галя, самовар и холодильник.</li>
+              <li>Комбо 50 включает ярость Сани: клики x2, пока она орёт.</li>
               <li>100 000 молока за забег — и Саню можно отправить в отпуск за сено.</li>
               <li>Клавиша M — звук. Esc — закрыть это окно.</li>
             </ul>
@@ -333,7 +358,8 @@ export function FarmApp() {
   const started = useGame((s) => s.started);
 
   return (
-    <div className="shell">
+    <div className="desktop">
+      <DeskIcons />
       <section className="window" aria-label="Ферма Кликер">
         <TitleBar />
         {started ? (

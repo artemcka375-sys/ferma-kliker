@@ -14,6 +14,8 @@ export const UPGRADE_IDS = [
   "altar",
   "chicken",
   "bacon",
+  "goat",
+  "samovar",
 ] as const;
 
 export type UpgradeId = (typeof UPGRADE_IDS)[number];
@@ -140,6 +142,22 @@ export const UPGRADES: Record<UpgradeId, UpgradeDef> = {
     base: 700000,
     growth: 1.5,
   },
+  goat: {
+    name: "Коза-адвокат Галя",
+    blurb: "Судит бидон и выигрывает. Клики жирнеют, совесть худеет.",
+    tab: "rare",
+    base: 12000,
+    growth: 1.55,
+    max: 8,
+  },
+  samovar: {
+    name: "Самовар дяди Коли",
+    blurb: "Кипит даже на паузе. Чай обиделся и ушёл в молоко.",
+    tab: "ultra",
+    base: 45000,
+    growth: 1.6,
+    max: 5,
+  },
 };
 
 export const BASE_KEFIR_CHANCE = 0.0023;
@@ -204,7 +222,9 @@ export type Production = {
 
 export function production(state: ProdState): Production {
   const { levels } = state;
-  const clickPower = 1 + levels.gloves + levels.electro * 5;
+  const goat = 1 + levels.goat * 0.15;
+  const samovar = 1 + levels.samovar * 0.08;
+  const clickPower = (1 + levels.gloves + levels.electro * 5) * goat * samovar;
   const hayMult = 1 + state.hay * HAY_BONUS;
   const kefir = state.kefirLeft > 0;
   const golden = levels.golden > 0;
@@ -216,7 +236,7 @@ export function production(state: ProdState): Production {
     levels.tractor * 120;
   if (kefir) passive *= KEFIR_MULT;
   if (golden) passive *= 2;
-  passive *= hayMult;
+  passive *= hayMult * samovar;
   if (state.droneLeft > 0) passive += DRONE_FLAT * hayMult;
   let auto = levels.auto * clickPower;
   if (kefir) auto *= KEFIR_MULT;
@@ -267,6 +287,10 @@ export function upgradeHint(id: UpgradeId, level: number): string {
       return `дроны ${droneDuration({ ...emptyLevels(), radio: next })} с`;
     case "bacon":
       return `дроны ${formatChance(getDroneChance({ ...emptyLevels(), bacon: next }))}`;
+    case "goat":
+      return `клики +${next * 15}%`;
+    case "samovar":
+      return `всё молоко +${next * 8}%`;
     default:
       return "";
   }

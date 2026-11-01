@@ -11,10 +11,12 @@ import {
   Hand,
   PiggyBank,
   Radio,
+  Scale,
   Tractor,
   UserRound,
   Wrench,
   Zap,
+  Coffee,
   type LucideIcon,
 } from "lucide-react";
 import { formatMilk, upgradeCost, upgradeHint, UPGRADES, UPGRADE_IDS, type ShopTab, type UpgradeId } from "@/game/balance";
@@ -36,6 +38,8 @@ const ICONS: Record<UpgradeId, LucideIcon> = {
   altar: Flame,
   radio: Radio,
   bacon: Beef,
+  goat: Scale,
+  samovar: Coffee,
 };
 
 const TABS: { id: "all" | ShopTab; label: string }[] = [
