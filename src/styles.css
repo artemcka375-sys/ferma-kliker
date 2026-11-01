@@ -1,0 +1,894 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Unbounded", "Manrope", ui-sans-serif, sans-serif;
+  --color-ink: #24180f;
+  --color-cream: #f7f1e4;
+  --color-grass: #2f7a3e;
+  --color-yolk: #e7a21a;
+  --color-rust: #c14b32;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: color-mix(in srgb, var(--color-grass) 38%, var(--color-ink));
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    line-height: 1.45;
+  }
+}
+
+.shell {
+  position: relative;
+  min-height: 100dvh;
+  padding: 0.75rem;
+  display: flex;
+  overflow-x: hidden;
+}
+
+.shell::before {
+  content: "";
+  position: absolute;
+  width: 7.5rem;
+  height: 7.5rem;
+  border-radius: 999px;
+  background: var(--color-yolk);
+  top: 1.25rem;
+  right: 6%;
+  pointer-events: none;
+}
+
+.shell::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 28%;
+  background: color-mix(in srgb, var(--color-grass) 72%, var(--color-ink));
+  pointer-events: none;
+}
+
+.window {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  border: 3px solid var(--color-ink);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  box-shadow: 0 22px 50px color-mix(in srgb, var(--color-ink) 40%, transparent);
+  user-select: none;
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.7rem;
+  background: var(--color-grass);
+  color: var(--color-cream);
+}
+
+.title-cow {
+  width: 2.4rem;
+  height: 2.2rem;
+  flex: none;
+}
+
+.title-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.title-copy strong {
+  font-size: 0.95rem;
+}
+
+.title-copy span {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.title-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 0.35rem;
+}
+
+.win-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border: 2px solid color-mix(in srgb, var(--color-cream) 55%, transparent);
+  border-radius: 0.7rem;
+  background: transparent;
+  color: var(--color-cream);
+}
+
+.win-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-cream) 16%, transparent);
+}
+
+.win-close:hover:not(:disabled) {
+  background: var(--color-rust);
+  border-color: var(--color-rust);
+}
+
+.game-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.pasture {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-height: 34rem;
+  padding: 0.75rem;
+  background:
+    radial-gradient(ellipse at 50% 115%, color-mix(in srgb, var(--color-yolk) 55%, var(--color-cream)), transparent 52%),
+    linear-gradient(180deg, color-mix(in srgb, var(--color-grass) 24%, var(--color-cream)), var(--color-cream) 46%);
+}
+
+.pasture-kefir {
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--color-yolk) 70%, var(--color-cream));
+}
+
+.pasture-drone {
+  box-shadow: inset 0 0 0 3px var(--color-grass);
+}
+
+.hud {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.15rem;
+}
+
+.chip {
+  flex: none;
+  min-width: 5.6rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--color-cream) 80%, white);
+  border: 2px solid color-mix(in srgb, var(--color-ink) 12%, var(--color-cream));
+}
+
+.chip-hot {
+  background: var(--color-yolk);
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+}
+
+.chip-label {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.chip-value {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.event-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 0.9rem;
+  border-radius: 1rem;
+  border: 3px solid var(--color-ink);
+  background: var(--color-rust);
+  color: var(--color-cream);
+  animation: pop 0.28s ease-out;
+}
+
+.event-banner strong {
+  font-family: var(--font-display);
+  font-size: 1rem;
+}
+
+.event-banner span {
+  font-size: 0.85rem;
+}
+
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 18rem;
+  display: grid;
+  place-items: center;
+}
+
+.cow-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-ink);
+  touch-action: manipulation;
+}
+
+.cow-btn.is-hit .mascot-cow {
+  animation: squish 0.14s ease-out;
+}
+
+.name-tag {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  background: var(--color-cream);
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  padding: 0.15rem 0.7rem;
+}
+
+.cow-hint {
+  font-size: 0.75rem;
+  opacity: 0.65;
+}
+
+.mascot-cow {
+  width: min(16rem, 70vw);
+  height: auto;
+}
+
+.slot {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--color-ink);
+}
+
+.pig-slot {
+  right: 0.4rem;
+  bottom: 0.2rem;
+}
+
+.pig-locked {
+  opacity: 0.55;
+}
+
+.drone-slot {
+  left: 0.4rem;
+  top: 0.2rem;
+  animation: bob 2.4s ease-in-out infinite;
+}
+
+.bacon-slot {
+  right: 0.5rem;
+  top: 0.4rem;
+  animation: bob 2.8s ease-in-out infinite;
+}
+
+.mascot-pig {
+  width: 5.5rem;
+}
+
+.mascot-drone {
+  width: 7.5rem;
+}
+
+.mascot-bacon {
+  width: 5.5rem;
+}
+
+.pig-note {
+  font-size: 0.7rem;
+}
+
+.bubble {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  width: max-content;
+  max-width: 11rem;
+  margin-bottom: 0.3rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.8rem;
+  background: var(--color-cream);
+  border: 2px solid var(--color-ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.bubble-drone {
+  left: 0;
+  right: auto;
+  bottom: auto;
+  top: 100%;
+  margin-top: 0.25rem;
+  background: var(--color-grass);
+  color: var(--color-cream);
+}
+
+.log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+
+.floater {
+  position: absolute;
+  z-index: 5;
+  font-family: var(--font-display);
+  font-weight: 800;
+  pointer-events: none;
+  animation: floatup 0.9s ease-out forwards;
+  text-shadow: 0 1px 0 var(--color-cream);
+}
+
+.floater-milk {
+  color: var(--color-ink);
+}
+
+.floater-crit,
+.floater-event {
+  color: var(--color-rust);
+  font-size: 1.15rem;
+}
+
+.floater-kefir {
+  color: var(--color-grass);
+}
+
+.floater-drone,
+.floater-pig {
+  color: var(--color-grass);
+}
+
+.shop {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.85rem;
+  background: color-mix(in srgb, var(--color-ink) 4%, var(--color-cream));
+  border-top: 2px solid color-mix(in srgb, var(--color-ink) 10%, transparent);
+}
+
+.shop-head h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.shop-head p {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.tab,
+.menu-col button,
+.go,
+.start-btn,
+.textish,
+.vacation,
+.dialog-x {
+  border: 2px solid var(--color-ink);
+  background: var(--color-cream);
+  color: var(--color-ink);
+  border-radius: 999px;
+  padding: 0.55rem 0.85rem;
+  min-height: 2.75rem;
+  font-weight: 700;
+}
+
+.tab-on,
+.start-on,
+.go {
+  background: var(--color-grass);
+  color: var(--color-cream);
+}
+
+.shop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card {
+  display: flex;
+  gap: 0.7rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.7rem;
+  border-radius: 1rem;
+  border: 2px solid color-mix(in srgb, var(--color-ink) 16%, var(--color-cream));
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+
+.card-click {
+  border-color: color-mix(in srgb, var(--color-yolk) 70%, var(--color-ink));
+}
+
+.card-rare {
+  border-color: color-mix(in srgb, var(--color-grass) 70%, var(--color-ink));
+}
+
+.card-ultra {
+  border-color: var(--color-rust);
+}
+
+.card-off {
+  opacity: 0.55;
+}
+
+.card-icon {
+  flex: none;
+  width: 2.7rem;
+  height: 2.7rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.8rem;
+  background: color-mix(in srgb, var(--color-yolk) 35%, var(--color-cream));
+  color: var(--color-ink);
+}
+
+.card-ultra .card-icon {
+  background: color-mix(in srgb, var(--color-rust) 25%, var(--color-cream));
+}
+
+.card-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.card-name {
+  font-weight: 800;
+}
+
+.card-lvl {
+  font-weight: 600;
+  opacity: 0.6;
+}
+
+.card-blurb {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.card-price {
+  color: var(--color-rust);
+  font-family: var(--font-display);
+}
+
+.vacation {
+  display: flex;
+  width: 100%;
+  border-radius: 1rem;
+  text-align: left;
+  background: var(--color-yolk);
+}
+
+.vacation strong,
+.vacation span {
+  display: block;
+}
+
+.vacation span {
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.taskbar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.6rem;
+  background: var(--color-ink);
+  color: var(--color-cream);
+}
+
+.start-btn {
+  flex: none;
+  background: var(--color-yolk);
+  color: var(--color-ink);
+}
+
+.ticker {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-milk {
+  flex: none;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+}
+
+.boot {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.8rem;
+  padding: 1.5rem 1.2rem 2rem;
+  max-width: 40rem;
+}
+
+.boot-kicker {
+  margin: 0;
+  letter-spacing: 0.08em;
+  color: var(--color-grass);
+}
+
+.boot-list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.boot-lead {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.boot-note {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.go {
+  align-self: flex-start;
+  padding: 0.8rem 1.2rem;
+  font-size: 1.05rem;
+}
+
+.toast {
+  position: fixed;
+  z-index: 30;
+  left: 50%;
+  bottom: 1.2rem;
+  transform: translateX(-50%);
+  width: min(36rem, calc(100% - 1.5rem));
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  border: 3px solid var(--color-ink);
+  background: var(--color-yolk);
+  color: var(--color-ink);
+  font-weight: 800;
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--color-ink) 28%, transparent);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: color-mix(in srgb, var(--color-ink) 46%, transparent);
+}
+
+.dialog {
+  position: relative;
+  width: min(34rem, 100%);
+  max-height: min(85dvh, 44rem);
+  overflow: auto;
+  padding: 1.1rem 1.1rem 1.2rem;
+  border-radius: 1.2rem;
+  border: 3px solid var(--color-ink);
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+
+.dialog h2 {
+  margin: 0 2rem 0.6rem 0;
+  font-size: 1.35rem;
+}
+
+.dialog p {
+  margin: 0 0 0.7rem;
+}
+
+.menu-col {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.45rem;
+}
+
+.menu-col button {
+  text-align: left;
+  border-radius: 0.9rem;
+}
+
+.menu-col button:disabled {
+  opacity: 0.45;
+}
+
+.danger {
+  background: var(--color-rust);
+  color: var(--color-cream);
+}
+
+.dialog-x {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.help-list {
+  margin: 0 0 0.8rem;
+  padding-left: 1.1rem;
+}
+
+.help-stats {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.textish {
+  margin-bottom: 0.8rem;
+}
+
+.ach-list {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.ach {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--color-ink) 6%, var(--color-cream));
+  font-size: 0.85rem;
+  opacity: 0.55;
+}
+
+.ach-got {
+  opacity: 1;
+  background: color-mix(in srgb, var(--color-grass) 18%, var(--color-cream));
+}
+
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.cow-body {
+  fill: var(--color-cream);
+  stroke: var(--color-ink);
+  stroke-width: 4;
+}
+
+.cow-spot,
+.cow-eye {
+  fill: var(--color-ink);
+}
+
+.cow-glint {
+  fill: var(--color-cream);
+}
+
+.cow-udder,
+.cow-ear,
+.cow-snout,
+.bacon-meat {
+  fill: var(--color-rust);
+  stroke: var(--color-ink);
+  stroke-width: 3;
+}
+
+.cow-horn,
+.cow-smile {
+  fill: none;
+  stroke: var(--color-yolk);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.cow-smile {
+  stroke: var(--color-ink);
+  stroke-width: 3;
+}
+
+.cow-bell,
+.drone-body,
+.bacon-fat {
+  fill: var(--color-yolk);
+  stroke: var(--color-ink);
+  stroke-width: 3;
+}
+
+.pig-body {
+  fill: color-mix(in srgb, var(--color-rust) 55%, var(--color-cream));
+  stroke: var(--color-ink);
+  stroke-width: 3;
+}
+
+.pig-ear,
+.pig-snout {
+  fill: var(--color-rust);
+  stroke: var(--color-ink);
+  stroke-width: 3;
+}
+
+.drone-arm,
+.prop ellipse {
+  fill: var(--color-ink);
+}
+
+.drone-eye {
+  fill: var(--color-cream);
+}
+
+.prop {
+  animation: spin 0.22s linear infinite;
+}
+
+.cow-rainbow {
+  animation: hue 2.4s linear infinite;
+}
+
+.is-shaking {
+  animation: shake 0.28s linear;
+}
+
+@keyframes squish {
+  50% {
+    transform: scale(0.94, 1.05);
+  }
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes floatup {
+  to {
+    transform: translateY(-46px);
+    opacity: 0;
+  }
+}
+
+@keyframes shake {
+  20% {
+    transform: translate(-3px, 1px) rotate(-0.4deg);
+  }
+  40% {
+    transform: translate(3px, -1px) rotate(0.4deg);
+  }
+  60% {
+    transform: translate(-2px, 0) rotate(-0.2deg);
+  }
+  80% {
+    transform: translate(2px, 1px) rotate(0.2deg);
+  }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.92);
+  }
+}
+
+@keyframes hue {
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+
+@media (min-width: 960px) {
+  .shell {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .game-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(20rem, 0.82fr);
+  }
+
+  .pasture,
+  .shop {
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .shop {
+    border-top: 0;
+    border-left: 2px solid color-mix(in srgb, var(--color-ink) 10%, transparent);
+  }
+
+  .pasture {
+    min-height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prop,
+  .drone-slot,
+  .bacon-slot,
+  .cow-rainbow,
+  .is-shaking,
+  .floater,
+  .cow-btn.is-hit .mascot-cow,
+  .event-banner {
+    animation: none;
+  }
+}
